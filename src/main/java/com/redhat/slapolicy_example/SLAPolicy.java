@@ -13,11 +13,14 @@ public class SLAPolicy implements java.io.Serializable {
 	@org.kie.api.definition.type.Label("description")
 	private java.lang.String description;
 
-	@org.kie.api.definition.type.Label(value = "priority")
+	@org.kie.api.definition.type.Label("priority")
 	private java.lang.String priority;
 
-	@org.kie.api.definition.type.Label(value = "resolutionDuration")
+	@org.kie.api.definition.type.Label("resolutionDuration")
 	private java.lang.String resolutionDuration;
+
+	@org.kie.api.definition.type.Label(value = "escalation")
+	private com.redhat.slapolicy_example.SLAEscalation escalation;
 
 	public SLAPolicy() {
 	}
@@ -54,12 +57,23 @@ public class SLAPolicy implements java.io.Serializable {
 		this.resolutionDuration = resolutionDuration;
 	}
 
+	public com.redhat.slapolicy_example.SLAEscalation getEscalation() {
+		return this.escalation;
+	}
+
+	public void setEscalation(
+			com.redhat.slapolicy_example.SLAEscalation escalation) {
+		this.escalation = escalation;
+	}
+
 	public SLAPolicy(java.lang.String name, java.lang.String description,
-			java.lang.String priority, java.lang.String resolutionDuration) {
+			java.lang.String priority, java.lang.String resolutionDuration,
+			com.redhat.slapolicy_example.SLAEscalation escalation) {
 		this.name = name;
 		this.description = description;
 		this.priority = priority;
 		this.resolutionDuration = resolutionDuration;
+		this.escalation = escalation;
 	}
 
 }

@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<bpmn2:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.omg.org/bpmn20" xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:bpsim="http://www.bpsim.org/schemas/1.0" xmlns:color="http://www.omg.org/spec/BPMN/non-normative/color" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:drools="http://www.jboss.org/drools" id="_sfI-sBC4Eeih8OBwV5QP5A" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd http://www.jboss.org/drools drools.xsd http://www.bpsim.org/schemas/1.0 bpsim.xsd" exporter="jBPM Designer" exporterVersion="6.2.0" expressionLanguage="http://www.mvel.org/2.0" targetNamespace="http://www.omg.org/bpmn20" typeLanguage="http://www.java.com/javaTypes">
+<bpmn2:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.omg.org/bpmn20" xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:bpsim="http://www.bpsim.org/schemas/1.0" xmlns:color="http://www.omg.org/spec/BPMN/non-normative/color" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:drools="http://www.jboss.org/drools" id="_2KtVABDMEeih8OBwV5QP5A" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd http://www.jboss.org/drools drools.xsd http://www.bpsim.org/schemas/1.0 bpsim.xsd" exporter="jBPM Designer" exporterVersion="6.2.0" expressionLanguage="http://www.mvel.org/2.0" targetNamespace="http://www.omg.org/bpmn20" typeLanguage="http://www.java.com/javaTypes">
   <bpmn2:itemDefinition id="_caseFile_slaPolicyItem" structureRef="com.redhat.slapolicy_example.SLAPolicy"/>
   <bpmn2:itemDefinition id="_slapolicy_conditionItem" structureRef="String"/>
   <bpmn2:itemDefinition id="_slapolicy_priorityItem" structureRef="String"/>
+  <bpmn2:itemDefinition id="_slapolicy_waiting_before_escalationItem" structureRef="String"/>
+  <bpmn2:itemDefinition id="_slapolicy_delegate_toItem" structureRef="String"/>
   <bpmn2:itemDefinition id="__08C96BD7-9F49-4CF2-8C3C-B3F5220E4C7F_TaskNameInputXItem" structureRef="String"/>
   <bpmn2:itemDefinition id="__08C96BD7-9F49-4CF2-8C3C-B3F5220E4C7F_GroupIdInputXItem" structureRef="Object"/>
   <bpmn2:itemDefinition id="__08C96BD7-9F49-4CF2-8C3C-B3F5220E4C7F_SkippableInputXItem" structureRef="Object"/>
@@ -15,10 +17,13 @@
         <drools:metaValue><![CDATA[Staff:2]]></drools:metaValue>
       </drools:metaData>
       <drools:import name="com.redhat.slapolicy_example.SLAPolicy"/>
+      <drools:import name="com.redhat.slapolicy_example.SLAEscalation"/>
     </bpmn2:extensionElements>
     <bpmn2:property id="caseFile_slaPolicy" itemSubjectRef="_caseFile_slaPolicyItem"/>
     <bpmn2:property id="slapolicy_condition" itemSubjectRef="_slapolicy_conditionItem"/>
     <bpmn2:property id="slapolicy_priority" itemSubjectRef="_slapolicy_priorityItem"/>
+    <bpmn2:property id="slapolicy_waiting_before_escalation" itemSubjectRef="_slapolicy_waiting_before_escalationItem"/>
+    <bpmn2:property id="slapolicy_delegate_to" itemSubjectRef="_slapolicy_delegate_toItem"/>
     <bpmn2:startEvent id="_4665B028-1A93-453A-8E20-1D6EA3FFFA3F" drools:selectable="true" color:background-color="#9acd32" color:border-color="#000000" color:color="#000000" name="">
       <bpmn2:extensionElements>
         <drools:metaData name="elementname">
@@ -40,15 +45,19 @@ kcontext.setVariable("slapolicy_condition",resolutionDuration);
 kcontext.setVariable("slapolicy_priority",priority);
 System.out.println("Case duration has been set to:"+kcontext.getVariable("slapolicy_condition"));
 System.out.println("Case priority set to:"+kcontext.getVariable("slapolicy_priority"));
-
+java.util.Map slaEscalationMap = (java.util.Map)slaPolicymap.get("escalation");
+kcontext.setVariable("slapolicy_waiting_before_escalation",slaEscalationMap.get("waitingTimeBeforeEscalate"));
+kcontext.setVariable("slapolicy_delegate_to",slaEscalationMap.get("groups"));
+System.out.println("Case escalate to:"+kcontext.getVariable("slapolicy_delegate_to"));
+System.out.println("Case escalate after:"+kcontext.getVariable("slapolicy_waiting_before_escalation"));
 ]]></drools:script>
         </drools:onEntry-script>
       </bpmn2:extensionElements>
       <bpmn2:incoming>_FF16A279-FC6F-4ED4-ADC2-F8700F8F4045</bpmn2:incoming>
       <bpmn2:outgoing>_97ECEE42-4E4F-45DD-9262-93F3E32B6B48</bpmn2:outgoing>
-      <bpmn2:ioSpecification id="_sfI-sRC4Eeih8OBwV5QP5A">
-        <bpmn2:inputSet id="_sfI-shC4Eeih8OBwV5QP5A"/>
-        <bpmn2:outputSet id="_sfI-sxC4Eeih8OBwV5QP5A"/>
+      <bpmn2:ioSpecification id="_2Kt8EBDMEeih8OBwV5QP5A">
+        <bpmn2:inputSet id="_2Kt8ERDMEeih8OBwV5QP5A"/>
+        <bpmn2:outputSet id="_2Kt8EhDMEeih8OBwV5QP5A"/>
       </bpmn2:ioSpecification>
       <bpmn2:startEvent id="_D481C285-D7FC-4DC6-8478-BE8EB180B540" drools:selectable="true" color:background-color="#9acd32" color:border-color="#000000" color:color="#000000" name="">
         <bpmn2:extensionElements>
@@ -66,42 +75,42 @@ System.out.println("Case priority set to:"+kcontext.getVariable("slapolicy_prior
         </bpmn2:extensionElements>
         <bpmn2:incoming>_669BE7E8-BCBD-4C5C-8456-6B0FF1AE42CC</bpmn2:incoming>
         <bpmn2:outgoing>_F376923E-C59B-46AD-A387-04F13CA17660</bpmn2:outgoing>
-        <bpmn2:ioSpecification id="_sfI-tBC4Eeih8OBwV5QP5A">
+        <bpmn2:ioSpecification id="_2Kt8ExDMEeih8OBwV5QP5A">
           <bpmn2:dataInput id="_A06F0D17-ACC1-40B3-B541-EBA1D697E780_TaskNameInputX" drools:dtype="String" name="TaskName"/>
           <bpmn2:dataInput id="_A06F0D17-ACC1-40B3-B541-EBA1D697E780_slapolicyPriorityInputX" drools:dtype="String" name="slapolicyPriority"/>
           <bpmn2:dataInput id="_A06F0D17-ACC1-40B3-B541-EBA1D697E780_GroupIdInputX" drools:dtype="Object" name="GroupId"/>
           <bpmn2:dataInput id="_A06F0D17-ACC1-40B3-B541-EBA1D697E780_SkippableInputX" drools:dtype="Object" name="Skippable"/>
-          <bpmn2:inputSet id="_sfI-tRC4Eeih8OBwV5QP5A">
+          <bpmn2:inputSet id="_2Kt8FBDMEeih8OBwV5QP5A">
             <bpmn2:dataInputRefs>_A06F0D17-ACC1-40B3-B541-EBA1D697E780_slapolicyPriorityInputX</bpmn2:dataInputRefs>
             <bpmn2:dataInputRefs>_A06F0D17-ACC1-40B3-B541-EBA1D697E780_GroupIdInputX</bpmn2:dataInputRefs>
             <bpmn2:dataInputRefs>_A06F0D17-ACC1-40B3-B541-EBA1D697E780_SkippableInputX</bpmn2:dataInputRefs>
             <bpmn2:dataInputRefs>_A06F0D17-ACC1-40B3-B541-EBA1D697E780_TaskNameInputX</bpmn2:dataInputRefs>
           </bpmn2:inputSet>
-          <bpmn2:outputSet id="_sfI-thC4Eeih8OBwV5QP5A"/>
+          <bpmn2:outputSet id="_2Kt8FRDMEeih8OBwV5QP5A"/>
         </bpmn2:ioSpecification>
-        <bpmn2:dataInputAssociation id="_sfI-txC4Eeih8OBwV5QP5A">
+        <bpmn2:dataInputAssociation id="_2Kt8FhDMEeih8OBwV5QP5A">
           <bpmn2:targetRef>_A06F0D17-ACC1-40B3-B541-EBA1D697E780_TaskNameInputX</bpmn2:targetRef>
-          <bpmn2:assignment id="_sfI-uBC4Eeih8OBwV5QP5A">
-            <bpmn2:from xsi:type="bpmn2:tFormalExpression" id="_sfI-uRC4Eeih8OBwV5QP5A"><![CDATA[TaskOne]]></bpmn2:from>
-            <bpmn2:to xsi:type="bpmn2:tFormalExpression" id="_sfI-uhC4Eeih8OBwV5QP5A">_A06F0D17-ACC1-40B3-B541-EBA1D697E780_TaskNameInputX</bpmn2:to>
+          <bpmn2:assignment id="_2Kt8FxDMEeih8OBwV5QP5A">
+            <bpmn2:from xsi:type="bpmn2:tFormalExpression" id="_2Kt8GBDMEeih8OBwV5QP5A"><![CDATA[TaskOne]]></bpmn2:from>
+            <bpmn2:to xsi:type="bpmn2:tFormalExpression" id="_2Kt8GRDMEeih8OBwV5QP5A">_A06F0D17-ACC1-40B3-B541-EBA1D697E780_TaskNameInputX</bpmn2:to>
           </bpmn2:assignment>
         </bpmn2:dataInputAssociation>
-        <bpmn2:dataInputAssociation id="_sfI-uxC4Eeih8OBwV5QP5A">
+        <bpmn2:dataInputAssociation id="_2Kt8GhDMEeih8OBwV5QP5A">
           <bpmn2:sourceRef>slapolicy_priority</bpmn2:sourceRef>
           <bpmn2:targetRef>_A06F0D17-ACC1-40B3-B541-EBA1D697E780_slapolicyPriorityInputX</bpmn2:targetRef>
         </bpmn2:dataInputAssociation>
-        <bpmn2:dataInputAssociation id="_sfI-vBC4Eeih8OBwV5QP5A">
+        <bpmn2:dataInputAssociation id="_2Kt8GxDMEeih8OBwV5QP5A">
           <bpmn2:targetRef>_A06F0D17-ACC1-40B3-B541-EBA1D697E780_GroupIdInputX</bpmn2:targetRef>
-          <bpmn2:assignment id="_sfI-vRC4Eeih8OBwV5QP5A">
-            <bpmn2:from xsi:type="bpmn2:tFormalExpression" id="_sfI-vhC4Eeih8OBwV5QP5A"><![CDATA[Staff]]></bpmn2:from>
-            <bpmn2:to xsi:type="bpmn2:tFormalExpression" id="_sfI-vxC4Eeih8OBwV5QP5A">_A06F0D17-ACC1-40B3-B541-EBA1D697E780_GroupIdInputX</bpmn2:to>
+          <bpmn2:assignment id="_2Kt8HBDMEeih8OBwV5QP5A">
+            <bpmn2:from xsi:type="bpmn2:tFormalExpression" id="_2Kt8HRDMEeih8OBwV5QP5A"><![CDATA[Staff]]></bpmn2:from>
+            <bpmn2:to xsi:type="bpmn2:tFormalExpression" id="_2Kt8HhDMEeih8OBwV5QP5A">_A06F0D17-ACC1-40B3-B541-EBA1D697E780_GroupIdInputX</bpmn2:to>
           </bpmn2:assignment>
         </bpmn2:dataInputAssociation>
-        <bpmn2:dataInputAssociation id="_sfI-wBC4Eeih8OBwV5QP5A">
+        <bpmn2:dataInputAssociation id="_2Kt8HxDMEeih8OBwV5QP5A">
           <bpmn2:targetRef>_A06F0D17-ACC1-40B3-B541-EBA1D697E780_SkippableInputX</bpmn2:targetRef>
-          <bpmn2:assignment id="_sfI-wRC4Eeih8OBwV5QP5A">
-            <bpmn2:from xsi:type="bpmn2:tFormalExpression" id="_sfI-whC4Eeih8OBwV5QP5A">true</bpmn2:from>
-            <bpmn2:to xsi:type="bpmn2:tFormalExpression" id="_sfI-wxC4Eeih8OBwV5QP5A">_A06F0D17-ACC1-40B3-B541-EBA1D697E780_SkippableInputX</bpmn2:to>
+          <bpmn2:assignment id="_2Kt8IBDMEeih8OBwV5QP5A">
+            <bpmn2:from xsi:type="bpmn2:tFormalExpression" id="_2Kt8IRDMEeih8OBwV5QP5A">true</bpmn2:from>
+            <bpmn2:to xsi:type="bpmn2:tFormalExpression" id="_2Kt8IhDMEeih8OBwV5QP5A">_A06F0D17-ACC1-40B3-B541-EBA1D697E780_SkippableInputX</bpmn2:to>
           </bpmn2:assignment>
         </bpmn2:dataInputAssociation>
       </bpmn2:userTask>
@@ -123,7 +132,7 @@ System.out.println("Case priority set to:"+kcontext.getVariable("slapolicy_prior
         </drools:metaData>
       </bpmn2:extensionElements>
       <bpmn2:incoming>_97ECEE42-4E4F-45DD-9262-93F3E32B6B48</bpmn2:incoming>
-      <bpmn2:terminateEventDefinition id="_sfI-xBC4Eeih8OBwV5QP5A"/>
+      <bpmn2:terminateEventDefinition id="_2Kt8IxDMEeih8OBwV5QP5A"/>
     </bpmn2:endEvent>
     <bpmn2:sequenceFlow id="_FF16A279-FC6F-4ED4-ADC2-F8700F8F4045" drools:selectable="true" color:background-color="#000000" color:border-color="#000000" color:color="#000000" sourceRef="_4665B028-1A93-453A-8E20-1D6EA3FFFA3F" targetRef="_25A3A59D-9C59-4FFB-95D3-6F1C1C5CB68F"/>
     <bpmn2:sequenceFlow id="_97ECEE42-4E4F-45DD-9262-93F3E32B6B48" drools:selectable="true" color:background-color="#000000" color:border-color="#000000" color:color="#000000" sourceRef="_25A3A59D-9C59-4FFB-95D3-6F1C1C5CB68F" targetRef="_42B0A301-C37C-47C1-8E5B-95D92C97FAD2"/>
@@ -137,42 +146,42 @@ System.out.println("Case priority set to:"+kcontext.getVariable("slapolicy_prior
 ]]></drools:script>
         </drools:onEntry-script>
       </bpmn2:extensionElements>
-      <bpmn2:incoming>_6FF900C3-ADA9-4CE7-95B2-06ACE1C83669</bpmn2:incoming>
+      <bpmn2:incoming>_D82B410A-19CE-40A7-A663-BDC07F4AB457</bpmn2:incoming>
       <bpmn2:outgoing>_B2DF8306-3CBD-48A8-A570-3F215290A03A</bpmn2:outgoing>
-      <bpmn2:ioSpecification id="_sfI-xRC4Eeih8OBwV5QP5A">
+      <bpmn2:ioSpecification id="_2Kt8JBDMEeih8OBwV5QP5A">
         <bpmn2:dataInput id="_08C96BD7-9F49-4CF2-8C3C-B3F5220E4C7F_TaskNameInputX" drools:dtype="String" itemSubjectRef="__08C96BD7-9F49-4CF2-8C3C-B3F5220E4C7F_TaskNameInputXItem" name="TaskName"/>
         <bpmn2:dataInput id="_08C96BD7-9F49-4CF2-8C3C-B3F5220E4C7F_GroupIdInputX" drools:dtype="Object" itemSubjectRef="__08C96BD7-9F49-4CF2-8C3C-B3F5220E4C7F_GroupIdInputXItem" name="GroupId"/>
         <bpmn2:dataInput id="_08C96BD7-9F49-4CF2-8C3C-B3F5220E4C7F_SkippableInputX" drools:dtype="Object" itemSubjectRef="__08C96BD7-9F49-4CF2-8C3C-B3F5220E4C7F_SkippableInputXItem" name="Skippable"/>
-        <bpmn2:inputSet id="_sfI-xhC4Eeih8OBwV5QP5A">
+        <bpmn2:inputSet id="_2Kt8JRDMEeih8OBwV5QP5A">
           <bpmn2:dataInputRefs>_08C96BD7-9F49-4CF2-8C3C-B3F5220E4C7F_GroupIdInputX</bpmn2:dataInputRefs>
           <bpmn2:dataInputRefs>_08C96BD7-9F49-4CF2-8C3C-B3F5220E4C7F_SkippableInputX</bpmn2:dataInputRefs>
           <bpmn2:dataInputRefs>_08C96BD7-9F49-4CF2-8C3C-B3F5220E4C7F_TaskNameInputX</bpmn2:dataInputRefs>
         </bpmn2:inputSet>
-        <bpmn2:outputSet id="_sfI-xxC4Eeih8OBwV5QP5A"/>
+        <bpmn2:outputSet id="_2Kt8JhDMEeih8OBwV5QP5A"/>
       </bpmn2:ioSpecification>
-      <bpmn2:dataInputAssociation id="_sfI-yBC4Eeih8OBwV5QP5A">
+      <bpmn2:dataInputAssociation id="_2Kt8JxDMEeih8OBwV5QP5A">
         <bpmn2:targetRef>_08C96BD7-9F49-4CF2-8C3C-B3F5220E4C7F_TaskNameInputX</bpmn2:targetRef>
-        <bpmn2:assignment id="_sfI-yRC4Eeih8OBwV5QP5A">
-          <bpmn2:from xsi:type="bpmn2:tFormalExpression" id="_sfI-yhC4Eeih8OBwV5QP5A"><![CDATA[TaskTwo]]></bpmn2:from>
-          <bpmn2:to xsi:type="bpmn2:tFormalExpression" id="_sfI-yxC4Eeih8OBwV5QP5A">_08C96BD7-9F49-4CF2-8C3C-B3F5220E4C7F_TaskNameInputX</bpmn2:to>
+        <bpmn2:assignment id="_2Kt8KBDMEeih8OBwV5QP5A">
+          <bpmn2:from xsi:type="bpmn2:tFormalExpression" id="_2Kt8KRDMEeih8OBwV5QP5A"><![CDATA[TaskTwo]]></bpmn2:from>
+          <bpmn2:to xsi:type="bpmn2:tFormalExpression" id="_2Kt8KhDMEeih8OBwV5QP5A">_08C96BD7-9F49-4CF2-8C3C-B3F5220E4C7F_TaskNameInputX</bpmn2:to>
         </bpmn2:assignment>
       </bpmn2:dataInputAssociation>
-      <bpmn2:dataInputAssociation id="_sfI-zBC4Eeih8OBwV5QP5A">
+      <bpmn2:dataInputAssociation id="_2Kt8KxDMEeih8OBwV5QP5A">
         <bpmn2:targetRef>_08C96BD7-9F49-4CF2-8C3C-B3F5220E4C7F_GroupIdInputX</bpmn2:targetRef>
-        <bpmn2:assignment id="_sfI-zRC4Eeih8OBwV5QP5A">
-          <bpmn2:from xsi:type="bpmn2:tFormalExpression" id="_sfI-zhC4Eeih8OBwV5QP5A"><![CDATA[Staff]]></bpmn2:from>
-          <bpmn2:to xsi:type="bpmn2:tFormalExpression" id="_sfI-zxC4Eeih8OBwV5QP5A">_08C96BD7-9F49-4CF2-8C3C-B3F5220E4C7F_GroupIdInputX</bpmn2:to>
+        <bpmn2:assignment id="_2Kt8LBDMEeih8OBwV5QP5A">
+          <bpmn2:from xsi:type="bpmn2:tFormalExpression" id="_2Kt8LRDMEeih8OBwV5QP5A"><![CDATA[#{slapolicy_delegate_to}]]></bpmn2:from>
+          <bpmn2:to xsi:type="bpmn2:tFormalExpression" id="_2Kt8LhDMEeih8OBwV5QP5A">_08C96BD7-9F49-4CF2-8C3C-B3F5220E4C7F_GroupIdInputX</bpmn2:to>
         </bpmn2:assignment>
       </bpmn2:dataInputAssociation>
-      <bpmn2:dataInputAssociation id="_sfI-0BC4Eeih8OBwV5QP5A">
+      <bpmn2:dataInputAssociation id="_2Kt8LxDMEeih8OBwV5QP5A">
         <bpmn2:targetRef>_08C96BD7-9F49-4CF2-8C3C-B3F5220E4C7F_SkippableInputX</bpmn2:targetRef>
-        <bpmn2:assignment id="_sfI-0RC4Eeih8OBwV5QP5A">
-          <bpmn2:from xsi:type="bpmn2:tFormalExpression" id="_sfI-0hC4Eeih8OBwV5QP5A">true</bpmn2:from>
-          <bpmn2:to xsi:type="bpmn2:tFormalExpression" id="_sfI-0xC4Eeih8OBwV5QP5A">_08C96BD7-9F49-4CF2-8C3C-B3F5220E4C7F_SkippableInputX</bpmn2:to>
+        <bpmn2:assignment id="_2Kt8MBDMEeih8OBwV5QP5A">
+          <bpmn2:from xsi:type="bpmn2:tFormalExpression" id="_2Kt8MRDMEeih8OBwV5QP5A">true</bpmn2:from>
+          <bpmn2:to xsi:type="bpmn2:tFormalExpression" id="_2Kt8MhDMEeih8OBwV5QP5A">_08C96BD7-9F49-4CF2-8C3C-B3F5220E4C7F_SkippableInputX</bpmn2:to>
         </bpmn2:assignment>
       </bpmn2:dataInputAssociation>
     </bpmn2:userTask>
-    <bpmn2:sequenceFlow id="_6FF900C3-ADA9-4CE7-95B2-06ACE1C83669" drools:selectable="true" color:background-color="#000000" color:border-color="#000000" color:color="#000000" sourceRef="_80D570F2-8710-481F-8DB7-B0650A5104D9" targetRef="_08C96BD7-9F49-4CF2-8C3C-B3F5220E4C7F"/>
+    <bpmn2:sequenceFlow id="_6FF900C3-ADA9-4CE7-95B2-06ACE1C83669" drools:selectable="true" color:background-color="#000000" color:border-color="#000000" color:color="#000000" sourceRef="_80D570F2-8710-481F-8DB7-B0650A5104D9" targetRef="_E43D3C77-D273-4324-986D-231E3FAC552D"/>
     <bpmn2:endEvent id="_E912ECB3-3228-4656-B4EF-3C4CCCA62D1F" drools:selectable="true" color:background-color="#ff6347" color:border-color="#000000" color:color="#000000" name="">
       <bpmn2:extensionElements>
         <drools:metaData name="elementname">
@@ -182,79 +191,99 @@ System.out.println("Case priority set to:"+kcontext.getVariable("slapolicy_prior
       <bpmn2:incoming>_B2DF8306-3CBD-48A8-A570-3F215290A03A</bpmn2:incoming>
     </bpmn2:endEvent>
     <bpmn2:sequenceFlow id="_B2DF8306-3CBD-48A8-A570-3F215290A03A" drools:selectable="true" color:background-color="#000000" color:border-color="#000000" color:color="#000000" sourceRef="_08C96BD7-9F49-4CF2-8C3C-B3F5220E4C7F" targetRef="_E912ECB3-3228-4656-B4EF-3C4CCCA62D1F"/>
-    <bpmn2:boundaryEvent id="_80D570F2-8710-481F-8DB7-B0650A5104D9" drools:selectable="true" drools:boundaryca="false" drools:dockerinfo="219.0^223.0|" color:background-color="#f5deb3" color:border-color="#a0522d" color:color="#000000" name="" attachedToRef="_25A3A59D-9C59-4FFB-95D3-6F1C1C5CB68F" cancelActivity="false">
+    <bpmn2:intermediateCatchEvent id="_E43D3C77-D273-4324-986D-231E3FAC552D" drools:selectable="true" drools:boundaryca="true" color:background-color="#f5deb3" color:border-color="#a0522d" color:color="#000000" name="wait time before escalation">
       <bpmn2:extensionElements>
         <drools:metaData name="elementname">
-          <drools:metaValue><![CDATA[]]></drools:metaValue>
+          <drools:metaValue><![CDATA[wait time before escalation]]></drools:metaValue>
+        </drools:metaData>
+      </bpmn2:extensionElements>
+      <bpmn2:incoming>_6FF900C3-ADA9-4CE7-95B2-06ACE1C83669</bpmn2:incoming>
+      <bpmn2:outgoing>_D82B410A-19CE-40A7-A663-BDC07F4AB457</bpmn2:outgoing>
+      <bpmn2:timerEventDefinition id="_2Kt8MxDMEeih8OBwV5QP5A">
+        <bpmn2:timeDuration xsi:type="bpmn2:tFormalExpression" id="_2Kt8NBDMEeih8OBwV5QP5A">#{slapolicy_waiting_before_escalation}</bpmn2:timeDuration>
+      </bpmn2:timerEventDefinition>
+    </bpmn2:intermediateCatchEvent>
+    <bpmn2:sequenceFlow id="_D82B410A-19CE-40A7-A663-BDC07F4AB457" drools:selectable="true" color:background-color="#000000" color:border-color="#000000" color:color="#000000" sourceRef="_E43D3C77-D273-4324-986D-231E3FAC552D" targetRef="_08C96BD7-9F49-4CF2-8C3C-B3F5220E4C7F"/>
+    <bpmn2:boundaryEvent id="_80D570F2-8710-481F-8DB7-B0650A5104D9" drools:selectable="true" drools:boundaryca="false" drools:dockerinfo="219.0^223.0|" color:background-color="#f5deb3" color:border-color="#a0522d" color:color="#000000" name="SLA Policy resolution duration" attachedToRef="_25A3A59D-9C59-4FFB-95D3-6F1C1C5CB68F" cancelActivity="false">
+      <bpmn2:extensionElements>
+        <drools:metaData name="elementname">
+          <drools:metaValue><![CDATA[SLA Policy resolution duration]]></drools:metaValue>
         </drools:metaData>
       </bpmn2:extensionElements>
       <bpmn2:outgoing>_6FF900C3-ADA9-4CE7-95B2-06ACE1C83669</bpmn2:outgoing>
-      <bpmn2:timerEventDefinition id="_sfI-1BC4Eeih8OBwV5QP5A">
-        <bpmn2:timeDuration xsi:type="bpmn2:tFormalExpression" id="_sfI-1RC4Eeih8OBwV5QP5A">#{slapolicy_condition}</bpmn2:timeDuration>
+      <bpmn2:timerEventDefinition id="_2Kt8NRDMEeih8OBwV5QP5A">
+        <bpmn2:timeDuration xsi:type="bpmn2:tFormalExpression" id="_2Kt8NhDMEeih8OBwV5QP5A">#{slapolicy_condition}</bpmn2:timeDuration>
       </bpmn2:timerEventDefinition>
     </bpmn2:boundaryEvent>
   </bpmn2:process>
-  <bpmndi:BPMNDiagram id="_sfI-1hC4Eeih8OBwV5QP5A">
-    <bpmndi:BPMNPlane id="_sfI-1xC4Eeih8OBwV5QP5A" bpmnElement="slapolicy-example.SLA_policy_sample">
-      <bpmndi:BPMNShape id="_sfI-2BC4Eeih8OBwV5QP5A" bpmnElement="_25A3A59D-9C59-4FFB-95D3-6F1C1C5CB68F">
+  <bpmndi:BPMNDiagram id="_2Kt8NxDMEeih8OBwV5QP5A">
+    <bpmndi:BPMNPlane id="_2Kt8OBDMEeih8OBwV5QP5A" bpmnElement="slapolicy-example.SLA_policy_sample">
+      <bpmndi:BPMNShape id="_2Kt8ORDMEeih8OBwV5QP5A" bpmnElement="_25A3A59D-9C59-4FFB-95D3-6F1C1C5CB68F">
         <dc:Bounds height="234.0" width="329.0" x="300.0" y="70.0"/>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="_sfI-2RC4Eeih8OBwV5QP5A" bpmnElement="_4665B028-1A93-453A-8E20-1D6EA3FFFA3F">
+      <bpmndi:BPMNShape id="_2Kt8OhDMEeih8OBwV5QP5A" bpmnElement="_4665B028-1A93-453A-8E20-1D6EA3FFFA3F">
         <dc:Bounds height="30.0" width="30.0" x="180.0" y="172.0"/>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="_sfI-2hC4Eeih8OBwV5QP5A" bpmnElement="_D481C285-D7FC-4DC6-8478-BE8EB180B540">
+      <bpmndi:BPMNShape id="_2Kt8OxDMEeih8OBwV5QP5A" bpmnElement="_D481C285-D7FC-4DC6-8478-BE8EB180B540">
         <dc:Bounds height="30.0" width="30.0" x="335.0" y="172.0"/>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="_sfI-2xC4Eeih8OBwV5QP5A" bpmnElement="_A06F0D17-ACC1-40B3-B541-EBA1D697E780">
+      <bpmndi:BPMNShape id="_2Kt8PBDMEeih8OBwV5QP5A" bpmnElement="_A06F0D17-ACC1-40B3-B541-EBA1D697E780">
         <dc:Bounds height="80.0" width="100.0" x="425.0" y="147.0"/>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="_sfI-3BC4Eeih8OBwV5QP5A" bpmnElement="_9B4B5F9D-0D51-4C9D-8853-0500966286D2">
+      <bpmndi:BPMNShape id="_2Kt8PRDMEeih8OBwV5QP5A" bpmnElement="_9B4B5F9D-0D51-4C9D-8853-0500966286D2">
         <dc:Bounds height="28.0" width="28.0" x="575.0" y="173.0"/>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="_sfI-3RC4Eeih8OBwV5QP5A" bpmnElement="_42B0A301-C37C-47C1-8E5B-95D92C97FAD2">
+      <bpmndi:BPMNShape id="_2Kt8PhDMEeih8OBwV5QP5A" bpmnElement="_42B0A301-C37C-47C1-8E5B-95D92C97FAD2">
         <dc:Bounds height="28.0" width="28.0" x="720.0" y="173.0"/>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="_sfI-3hC4Eeih8OBwV5QP5A" bpmnElement="_08C96BD7-9F49-4CF2-8C3C-B3F5220E4C7F">
-        <dc:Bounds height="80.0" width="100.0" x="474.0" y="360.0"/>
+      <bpmndi:BPMNShape id="_2Kt8PxDMEeih8OBwV5QP5A" bpmnElement="_08C96BD7-9F49-4CF2-8C3C-B3F5220E4C7F">
+        <dc:Bounds height="80.0" width="100.0" x="474.0" y="499.0"/>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="_sfI-3xC4Eeih8OBwV5QP5A" bpmnElement="_E912ECB3-3228-4656-B4EF-3C4CCCA62D1F">
-        <dc:Bounds height="28.0" width="28.0" x="630.0" y="386.0"/>
+      <bpmndi:BPMNShape id="_2Kt8QBDMEeih8OBwV5QP5A" bpmnElement="_E912ECB3-3228-4656-B4EF-3C4CCCA62D1F">
+        <dc:Bounds height="28.0" width="28.0" x="645.0" y="525.0"/>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="_sfI-4BC4Eeih8OBwV5QP5A" bpmnElement="_80D570F2-8710-481F-8DB7-B0650A5104D9">
+      <bpmndi:BPMNShape id="_2Kt8QRDMEeih8OBwV5QP5A" bpmnElement="_E43D3C77-D273-4324-986D-231E3FAC552D">
+        <dc:Bounds height="30.0" width="30.0" x="509.0" y="385.0"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_2Kt8QhDMEeih8OBwV5QP5A" bpmnElement="_80D570F2-8710-481F-8DB7-B0650A5104D9">
         <dc:Bounds height="30.0" width="30.0" x="509.0" y="289.0"/>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNEdge id="_sfI-4RC4Eeih8OBwV5QP5A" bpmnElement="_669BE7E8-BCBD-4C5C-8456-6B0FF1AE42CC" sourceElement="_sfI-2hC4Eeih8OBwV5QP5A" targetElement="_sfI-2xC4Eeih8OBwV5QP5A">
+      <bpmndi:BPMNEdge id="_2Kt8QxDMEeih8OBwV5QP5A" bpmnElement="_669BE7E8-BCBD-4C5C-8456-6B0FF1AE42CC" sourceElement="_2Kt8OxDMEeih8OBwV5QP5A" targetElement="_2Kt8PBDMEeih8OBwV5QP5A">
         <di:waypoint xsi:type="dc:Point" x="365.0" y="187.0"/>
         <di:waypoint xsi:type="dc:Point" x="425.0" y="187.0"/>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="_sfI-4hC4Eeih8OBwV5QP5A" bpmnElement="_F376923E-C59B-46AD-A387-04F13CA17660" sourceElement="_sfI-2xC4Eeih8OBwV5QP5A" targetElement="_sfI-3BC4Eeih8OBwV5QP5A">
+      <bpmndi:BPMNEdge id="_2Kt8RBDMEeih8OBwV5QP5A" bpmnElement="_F376923E-C59B-46AD-A387-04F13CA17660" sourceElement="_2Kt8PBDMEeih8OBwV5QP5A" targetElement="_2Kt8PRDMEeih8OBwV5QP5A">
         <di:waypoint xsi:type="dc:Point" x="525.0" y="187.0"/>
         <di:waypoint xsi:type="dc:Point" x="575.0" y="187.0"/>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="_sfI-4xC4Eeih8OBwV5QP5A" bpmnElement="_FF16A279-FC6F-4ED4-ADC2-F8700F8F4045" sourceElement="_sfI-2RC4Eeih8OBwV5QP5A" targetElement="_sfI-2BC4Eeih8OBwV5QP5A">
+      <bpmndi:BPMNEdge id="_2Kt8RRDMEeih8OBwV5QP5A" bpmnElement="_FF16A279-FC6F-4ED4-ADC2-F8700F8F4045" sourceElement="_2Kt8OhDMEeih8OBwV5QP5A" targetElement="_2Kt8ORDMEeih8OBwV5QP5A">
         <di:waypoint xsi:type="dc:Point" x="195.0" y="187.0"/>
         <di:waypoint xsi:type="dc:Point" x="464.5" y="187.0"/>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="_sfI-5BC4Eeih8OBwV5QP5A" bpmnElement="_97ECEE42-4E4F-45DD-9262-93F3E32B6B48" sourceElement="_sfI-2BC4Eeih8OBwV5QP5A" targetElement="_sfI-3RC4Eeih8OBwV5QP5A">
+      <bpmndi:BPMNEdge id="_2Kt8RhDMEeih8OBwV5QP5A" bpmnElement="_97ECEE42-4E4F-45DD-9262-93F3E32B6B48" sourceElement="_2Kt8ORDMEeih8OBwV5QP5A" targetElement="_2Kt8PhDMEeih8OBwV5QP5A">
         <di:waypoint xsi:type="dc:Point" x="464.5" y="187.0"/>
         <di:waypoint xsi:type="dc:Point" x="734.0" y="187.0"/>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="_sfI-5RC4Eeih8OBwV5QP5A" bpmnElement="_6FF900C3-ADA9-4CE7-95B2-06ACE1C83669" sourceElement="_sfI-4BC4Eeih8OBwV5QP5A" targetElement="_sfI-3hC4Eeih8OBwV5QP5A">
+      <bpmndi:BPMNEdge id="_2Kt8RxDMEeih8OBwV5QP5A" bpmnElement="_6FF900C3-ADA9-4CE7-95B2-06ACE1C83669" sourceElement="_2Kt8QhDMEeih8OBwV5QP5A" targetElement="_2Kt8QRDMEeih8OBwV5QP5A">
         <di:waypoint xsi:type="dc:Point" x="524.0" y="304.0"/>
         <di:waypoint xsi:type="dc:Point" x="524.0" y="400.0"/>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="_sfI-5hC4Eeih8OBwV5QP5A" bpmnElement="_B2DF8306-3CBD-48A8-A570-3F215290A03A" sourceElement="_sfI-3hC4Eeih8OBwV5QP5A" targetElement="_sfI-3xC4Eeih8OBwV5QP5A">
+      <bpmndi:BPMNEdge id="_2Kt8SBDMEeih8OBwV5QP5A" bpmnElement="_B2DF8306-3CBD-48A8-A570-3F215290A03A" sourceElement="_2Kt8PxDMEeih8OBwV5QP5A" targetElement="_2Kt8QBDMEeih8OBwV5QP5A">
+        <di:waypoint xsi:type="dc:Point" x="524.0" y="539.0"/>
+        <di:waypoint xsi:type="dc:Point" x="659.0" y="539.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="_2Kt8SRDMEeih8OBwV5QP5A" bpmnElement="_D82B410A-19CE-40A7-A663-BDC07F4AB457" sourceElement="_2Kt8QRDMEeih8OBwV5QP5A" targetElement="_2Kt8PxDMEeih8OBwV5QP5A">
         <di:waypoint xsi:type="dc:Point" x="524.0" y="400.0"/>
-        <di:waypoint xsi:type="dc:Point" x="644.0" y="400.0"/>
+        <di:waypoint xsi:type="dc:Point" x="524.0" y="539.0"/>
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
-  <bpmn2:relationship id="_sfI-5xC4Eeih8OBwV5QP5A" type="BPSimData">
+  <bpmn2:relationship id="_2Kt8ShDMEeih8OBwV5QP5A" type="BPSimData">
     <bpmn2:extensionElements>
       <bpsim:BPSimData>
         <bpsim:Scenario xsi:type="bpsim:Scenario" id="default" name="Simulationscenario">
           <bpsim:ScenarioParameters xsi:type="bpsim:ScenarioParameters" baseTimeUnit="min"/>
-          <bpsim:ElementParameters xsi:type="bpsim:ElementParameters" elementRef="_25A3A59D-9C59-4FFB-95D3-6F1C1C5CB68F" id="_sfI-6BC4Eeih8OBwV5QP5A">
+          <bpsim:ElementParameters xsi:type="bpsim:ElementParameters" elementRef="_25A3A59D-9C59-4FFB-95D3-6F1C1C5CB68F" id="_2Kt8SxDMEeih8OBwV5QP5A">
             <bpsim:TimeParameters xsi:type="bpsim:TimeParameters">
               <bpsim:ProcessingTime xsi:type="bpsim:Parameter">
                 <bpsim:UniformDistribution max="10.0" min="5.0"/>
@@ -266,21 +295,21 @@ System.out.println("Case priority set to:"+kcontext.getVariable("slapolicy_prior
               </bpsim:UnitCost>
             </bpsim:CostParameters>
           </bpsim:ElementParameters>
-          <bpsim:ElementParameters xsi:type="bpsim:ElementParameters" elementRef="_669BE7E8-BCBD-4C5C-8456-6B0FF1AE42CC" id="_sfI-6RC4Eeih8OBwV5QP5A">
+          <bpsim:ElementParameters xsi:type="bpsim:ElementParameters" elementRef="_669BE7E8-BCBD-4C5C-8456-6B0FF1AE42CC" id="_2Kt8TBDMEeih8OBwV5QP5A">
             <bpsim:ControlParameters xsi:type="bpsim:ControlParameters">
               <bpsim:Probability xsi:type="bpsim:Parameter">
                 <bpsim:FloatingParameter value="100.0"/>
               </bpsim:Probability>
             </bpsim:ControlParameters>
           </bpsim:ElementParameters>
-          <bpsim:ElementParameters xsi:type="bpsim:ElementParameters" elementRef="_F376923E-C59B-46AD-A387-04F13CA17660" id="_sfI-6hC4Eeih8OBwV5QP5A">
+          <bpsim:ElementParameters xsi:type="bpsim:ElementParameters" elementRef="_F376923E-C59B-46AD-A387-04F13CA17660" id="_2Kt8TRDMEeih8OBwV5QP5A">
             <bpsim:ControlParameters xsi:type="bpsim:ControlParameters">
               <bpsim:Probability xsi:type="bpsim:Parameter">
                 <bpsim:FloatingParameter value="100.0"/>
               </bpsim:Probability>
             </bpsim:ControlParameters>
           </bpsim:ElementParameters>
-          <bpsim:ElementParameters xsi:type="bpsim:ElementParameters" elementRef="_08C96BD7-9F49-4CF2-8C3C-B3F5220E4C7F" id="_sfI-6xC4Eeih8OBwV5QP5A">
+          <bpsim:ElementParameters xsi:type="bpsim:ElementParameters" elementRef="_08C96BD7-9F49-4CF2-8C3C-B3F5220E4C7F" id="_2Kt8ThDMEeih8OBwV5QP5A">
             <bpsim:TimeParameters xsi:type="bpsim:TimeParameters">
               <bpsim:ProcessingTime xsi:type="bpsim:Parameter">
                 <bpsim:UniformDistribution max="10.0" min="5.0"/>
@@ -300,14 +329,14 @@ System.out.println("Case priority set to:"+kcontext.getVariable("slapolicy_prior
               </bpsim:UnitCost>
             </bpsim:CostParameters>
           </bpsim:ElementParameters>
-          <bpsim:ElementParameters xsi:type="bpsim:ElementParameters" elementRef="_97ECEE42-4E4F-45DD-9262-93F3E32B6B48" id="_sfI-7BC4Eeih8OBwV5QP5A">
+          <bpsim:ElementParameters xsi:type="bpsim:ElementParameters" elementRef="_97ECEE42-4E4F-45DD-9262-93F3E32B6B48" id="_2Kt8TxDMEeih8OBwV5QP5A">
             <bpsim:ControlParameters xsi:type="bpsim:ControlParameters">
               <bpsim:Probability xsi:type="bpsim:Parameter">
                 <bpsim:FloatingParameter value="100.0"/>
               </bpsim:Probability>
             </bpsim:ControlParameters>
           </bpsim:ElementParameters>
-          <bpsim:ElementParameters xsi:type="bpsim:ElementParameters" elementRef="_80D570F2-8710-481F-8DB7-B0650A5104D9" id="_sfI-7RC4Eeih8OBwV5QP5A">
+          <bpsim:ElementParameters xsi:type="bpsim:ElementParameters" elementRef="_80D570F2-8710-481F-8DB7-B0650A5104D9" id="_2Kt8UBDMEeih8OBwV5QP5A">
             <bpsim:TimeParameters xsi:type="bpsim:TimeParameters">
               <bpsim:ProcessingTime xsi:type="bpsim:Parameter">
                 <bpsim:UniformDistribution max="10.0" min="5.0"/>
@@ -319,42 +348,49 @@ System.out.println("Case priority set to:"+kcontext.getVariable("slapolicy_prior
               </bpsim:Probability>
             </bpsim:ControlParameters>
           </bpsim:ElementParameters>
-          <bpsim:ElementParameters xsi:type="bpsim:ElementParameters" elementRef="_42B0A301-C37C-47C1-8E5B-95D92C97FAD2" id="_sfI-7hC4Eeih8OBwV5QP5A">
+          <bpsim:ElementParameters xsi:type="bpsim:ElementParameters" elementRef="_42B0A301-C37C-47C1-8E5B-95D92C97FAD2" id="_2Kt8URDMEeih8OBwV5QP5A">
             <bpsim:TimeParameters xsi:type="bpsim:TimeParameters">
               <bpsim:ProcessingTime xsi:type="bpsim:Parameter">
                 <bpsim:UniformDistribution max="10.0" min="5.0"/>
               </bpsim:ProcessingTime>
             </bpsim:TimeParameters>
           </bpsim:ElementParameters>
-          <bpsim:ElementParameters xsi:type="bpsim:ElementParameters" elementRef="_9B4B5F9D-0D51-4C9D-8853-0500966286D2" id="_sfI-7xC4Eeih8OBwV5QP5A">
+          <bpsim:ElementParameters xsi:type="bpsim:ElementParameters" elementRef="_9B4B5F9D-0D51-4C9D-8853-0500966286D2" id="_2Kt8UhDMEeih8OBwV5QP5A">
             <bpsim:TimeParameters xsi:type="bpsim:TimeParameters">
               <bpsim:ProcessingTime xsi:type="bpsim:Parameter">
                 <bpsim:UniformDistribution max="10.0" min="5.0"/>
               </bpsim:ProcessingTime>
             </bpsim:TimeParameters>
           </bpsim:ElementParameters>
-          <bpsim:ElementParameters xsi:type="bpsim:ElementParameters" elementRef="_6FF900C3-ADA9-4CE7-95B2-06ACE1C83669" id="_sfI-8BC4Eeih8OBwV5QP5A">
+          <bpsim:ElementParameters xsi:type="bpsim:ElementParameters" elementRef="_6FF900C3-ADA9-4CE7-95B2-06ACE1C83669" id="_2Kt8UxDMEeih8OBwV5QP5A">
             <bpsim:ControlParameters xsi:type="bpsim:ControlParameters">
               <bpsim:Probability xsi:type="bpsim:Parameter">
                 <bpsim:FloatingParameter value="100.0"/>
               </bpsim:Probability>
             </bpsim:ControlParameters>
           </bpsim:ElementParameters>
-          <bpsim:ElementParameters xsi:type="bpsim:ElementParameters" elementRef="_FF16A279-FC6F-4ED4-ADC2-F8700F8F4045" id="_sfI-8RC4Eeih8OBwV5QP5A">
+          <bpsim:ElementParameters xsi:type="bpsim:ElementParameters" elementRef="_FF16A279-FC6F-4ED4-ADC2-F8700F8F4045" id="_2Kt8VBDMEeih8OBwV5QP5A">
             <bpsim:ControlParameters xsi:type="bpsim:ControlParameters">
               <bpsim:Probability xsi:type="bpsim:Parameter">
                 <bpsim:FloatingParameter value="100.0"/>
               </bpsim:Probability>
             </bpsim:ControlParameters>
           </bpsim:ElementParameters>
-          <bpsim:ElementParameters xsi:type="bpsim:ElementParameters" elementRef="_E912ECB3-3228-4656-B4EF-3C4CCCA62D1F" id="_sfI-8hC4Eeih8OBwV5QP5A">
+          <bpsim:ElementParameters xsi:type="bpsim:ElementParameters" elementRef="_E912ECB3-3228-4656-B4EF-3C4CCCA62D1F" id="_2Kt8VRDMEeih8OBwV5QP5A">
             <bpsim:TimeParameters xsi:type="bpsim:TimeParameters">
               <bpsim:ProcessingTime xsi:type="bpsim:Parameter">
                 <bpsim:UniformDistribution max="10.0" min="5.0"/>
               </bpsim:ProcessingTime>
             </bpsim:TimeParameters>
           </bpsim:ElementParameters>
-          <bpsim:ElementParameters xsi:type="bpsim:ElementParameters" elementRef="_D481C285-D7FC-4DC6-8478-BE8EB180B540" id="_sfI-8xC4Eeih8OBwV5QP5A">
+          <bpsim:ElementParameters xsi:type="bpsim:ElementParameters" elementRef="_D82B410A-19CE-40A7-A663-BDC07F4AB457" id="_2Kt8VhDMEeih8OBwV5QP5A">
+            <bpsim:ControlParameters xsi:type="bpsim:ControlParameters">
+              <bpsim:Probability xsi:type="bpsim:Parameter">
+                <bpsim:FloatingParameter value="100.0"/>
+              </bpsim:Probability>
+            </bpsim:ControlParameters>
+          </bpsim:ElementParameters>
+          <bpsim:ElementParameters xsi:type="bpsim:ElementParameters" elementRef="_D481C285-D7FC-4DC6-8478-BE8EB180B540" id="_2Kt8VxDMEeih8OBwV5QP5A">
             <bpsim:TimeParameters xsi:type="bpsim:TimeParameters">
               <bpsim:ProcessingTime xsi:type="bpsim:Parameter">
                 <bpsim:UniformDistribution max="10.0" min="5.0"/>
@@ -366,7 +402,7 @@ System.out.println("Case priority set to:"+kcontext.getVariable("slapolicy_prior
               </bpsim:Probability>
             </bpsim:ControlParameters>
           </bpsim:ElementParameters>
-          <bpsim:ElementParameters xsi:type="bpsim:ElementParameters" elementRef="_4665B028-1A93-453A-8E20-1D6EA3FFFA3F" id="_sfI-9BC4Eeih8OBwV5QP5A">
+          <bpsim:ElementParameters xsi:type="bpsim:ElementParameters" elementRef="_E43D3C77-D273-4324-986D-231E3FAC552D" id="_2Kt8WBDMEeih8OBwV5QP5A">
             <bpsim:TimeParameters xsi:type="bpsim:TimeParameters">
               <bpsim:ProcessingTime xsi:type="bpsim:Parameter">
                 <bpsim:UniformDistribution max="10.0" min="5.0"/>
@@ -378,14 +414,26 @@ System.out.println("Case priority set to:"+kcontext.getVariable("slapolicy_prior
               </bpsim:Probability>
             </bpsim:ControlParameters>
           </bpsim:ElementParameters>
-          <bpsim:ElementParameters xsi:type="bpsim:ElementParameters" elementRef="_B2DF8306-3CBD-48A8-A570-3F215290A03A" id="_sfI-9RC4Eeih8OBwV5QP5A">
+          <bpsim:ElementParameters xsi:type="bpsim:ElementParameters" elementRef="_4665B028-1A93-453A-8E20-1D6EA3FFFA3F" id="_2Kt8WRDMEeih8OBwV5QP5A">
+            <bpsim:TimeParameters xsi:type="bpsim:TimeParameters">
+              <bpsim:ProcessingTime xsi:type="bpsim:Parameter">
+                <bpsim:UniformDistribution max="10.0" min="5.0"/>
+              </bpsim:ProcessingTime>
+            </bpsim:TimeParameters>
             <bpsim:ControlParameters xsi:type="bpsim:ControlParameters">
               <bpsim:Probability xsi:type="bpsim:Parameter">
                 <bpsim:FloatingParameter value="100.0"/>
               </bpsim:Probability>
             </bpsim:ControlParameters>
           </bpsim:ElementParameters>
-          <bpsim:ElementParameters xsi:type="bpsim:ElementParameters" elementRef="_A06F0D17-ACC1-40B3-B541-EBA1D697E780" id="_sfI-9hC4Eeih8OBwV5QP5A">
+          <bpsim:ElementParameters xsi:type="bpsim:ElementParameters" elementRef="_B2DF8306-3CBD-48A8-A570-3F215290A03A" id="_2Kt8WhDMEeih8OBwV5QP5A">
+            <bpsim:ControlParameters xsi:type="bpsim:ControlParameters">
+              <bpsim:Probability xsi:type="bpsim:Parameter">
+                <bpsim:FloatingParameter value="100.0"/>
+              </bpsim:Probability>
+            </bpsim:ControlParameters>
+          </bpsim:ElementParameters>
+          <bpsim:ElementParameters xsi:type="bpsim:ElementParameters" elementRef="_A06F0D17-ACC1-40B3-B541-EBA1D697E780" id="_2Kt8WxDMEeih8OBwV5QP5A">
             <bpsim:TimeParameters xsi:type="bpsim:TimeParameters">
               <bpsim:ProcessingTime xsi:type="bpsim:Parameter">
                 <bpsim:UniformDistribution max="10.0" min="5.0"/>
@@ -408,7 +456,7 @@ System.out.println("Case priority set to:"+kcontext.getVariable("slapolicy_prior
         </bpsim:Scenario>
       </bpsim:BPSimData>
     </bpmn2:extensionElements>
-    <bpmn2:source>_sfI-sBC4Eeih8OBwV5QP5A</bpmn2:source>
-    <bpmn2:target>_sfI-sBC4Eeih8OBwV5QP5A</bpmn2:target>
+    <bpmn2:source>_2KtVABDMEeih8OBwV5QP5A</bpmn2:source>
+    <bpmn2:target>_2KtVABDMEeih8OBwV5QP5A</bpmn2:target>
   </bpmn2:relationship>
 </bpmn2:definitions>

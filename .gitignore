@@ -34,3 +34,4 @@ hs_err_pid*
 .caseproject
 .global
 .service
+.resources

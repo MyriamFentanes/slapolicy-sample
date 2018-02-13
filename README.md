@@ -5,6 +5,8 @@ A case project sample with a SLA policy defined
 
 This sample project shows as a SLA policy with a priority and a resolution duration can be attached to a case; when the SLA policy is elapsed a human task (Task Two) is created.
 
+Task Two is delegated to an escalation groups (or groups) after a period (configurable)
+
 ![alt text](https://github.com/hifly81/slapolicy-sample/blob/master/src/main/resources/com/redhat/slapolicy_example/slapolicy-example.SLA_policy_sample-svg.svg)
 
 ## SLA Policy - usage

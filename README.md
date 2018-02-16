@@ -14,8 +14,14 @@ Task Two is delegated to an escalation group (or groups) after a period (configu
 Start a case with:
 
 ```
-curl -X POST "http://<ip>/kie-server/services/rest/server/containers/<container_id>/cases/<case_definition_id>/instances" -H  "accept: application/xml" -H  "content-type: application/json" -d '{"case-group-assignments": {"Staff": "Staff"},"case-data": {"slaPolicy":                 {"name": "urgent_sla","description": "urgent_sla","priority": "HIGH", "resolutionDuration": "PT300S", "escalation": {"groups": "Staff","waitingTimeBeforeEscalate": "PT30S"}}}}"
+curl -X POST "http://<ip>/kie-server/services/rest/server/containers/<container_id>/cases/<case_definition_id>/instances" \ 
+-H  "accept: application/xml" -H  "content-type: application/json" -d \
+'{"case-group-assignments": {"Staff": "Staff"},"case-data": {"slaPolicy":{"name": "urgent_sla","description": "urgent_sla","priority": "HIGH", "resolutionDuration": "PT300S", "escalation": {"groups": "Staff","waitingTimeBeforeEscalate": "PT30S"}}}}"
 ```
+
+- case-group-assignments --> are case roles
+- case-data
+  -- slaPolicy --> object representing a SLA policy
 
 resolutionDuration is a ISO-8601 date format<br>
 waitingTimeBeforeEscalate is a ISO-8601 date format
